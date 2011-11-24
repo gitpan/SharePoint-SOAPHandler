@@ -1,0 +1,7 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+t/SharePoint-SOAPHandler.t
+lib/SharePoint/SOAPHandler.pm
+META.yml                                 Module meta-data (added by MakeMaker)
