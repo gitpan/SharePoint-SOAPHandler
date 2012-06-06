@@ -31,7 +31,7 @@ EOP
 WriteMakefile(
     NAME              => 'SharePoint::SOAPHandler',
     VERSION_FROM      => 'lib/SharePoint/SOAPHandler.pm', # finds $VERSION
-    PREREQ_PM         => {Authen::NTLM =>1.09, CopyTree::VendorProof => 0, SOAP::Lite =>0, MIME::Base64=>0, File::Basename=> 0, Data::Dumper=> 0, Carp=>0}, # e.g., Module::Name => 1.1
+    PREREQ_PM         => {Authen::NTLM =>1.09, CopyTree::VendorProof => 0, SOAP::Lite =>0, MIME::Base64=>0, File::Basename=> 0, Data::Dumper=> 0, Carp=>0, Term::ReadKey=>0}, # e.g., Module::Name => 1.1
     #PREREQ_PM         => {Authen::NTLM =>1.09, CopyTree::VendorProof => 0.0011, SOAP::Lite =>0.712, MIME::Base64=>3.01, File::Basename=> 2.72, Data::Dumper=> 2.121, Carp=>1.02}, # e.g., Module::Name => 1.1
     clean => {
         FILES => 'test.config'

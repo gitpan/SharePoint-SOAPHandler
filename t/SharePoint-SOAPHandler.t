@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More; #require and import instead of use, since what is imported changes as
+use Test::More tests=>40; #require and import instead of use, since what is imported changes as
 				#we decide whether we want to do live tests or not
 #use Test::More tests => 1;
 BEGIN { use_ok('SharePoint::SOAPHandler') };
@@ -33,15 +33,18 @@ while(<$config_fh>) {
    $config{$key} = $value;
 }
 close $config_fh;
-if(!$config{live_tests}) {
-  # import Test::More tests => 1;
-  # ok(1);
-	done_testing();
-	
-   exit;
-}
-#import Test::More 'no_plan';
 
+SKIP:{
+
+skip 'skipping online tests', 37 if (!$config{'live_tests'});
+#if(!$config{live_tests}) {
+#  # import Test::More tests => 1;
+#  # ok(1);
+#	done_testing();
+#	
+#   exit;
+#}
+#import Test::More 'no_plan';
 
 	
 	my $cpobj = CopyTree::VendorProof->new;
@@ -111,6 +114,7 @@ if(!$config{live_tests}) {
 		print STDERR "========================================================================\n";
 		print STDERR "|      enter your sp_authorizedroot as such:                           |\n";
 		print STDERR "| https://www.sharepointsite.org:443/dir_just_above_Shared_documents   |\n";
+		print STDERR "|     Use plain spaces (don't escape with %20) and                     |\n";
 		print STDERR "|     Please, NO trailing slashes.                                     |\n";
 		print STDERR "=======================================================================|\n";
 		print STDERR "sp_authorizedroot [".$config{authroot}."]: ";
@@ -119,9 +123,9 @@ if(!$config{live_tests}) {
 		$config{authroot}=$authroot if $authroot;
 		print STDERR "\n";
 		print STDERR "========================================================================\n";
-		print STDERR "|      do you have a https sharepoint that does not require            |\n";
-		print STDERR "|      a proxy server, yet you use a proxy for other web traffic?(y/n) |\n";
-		print STDERR "|                                                                      |\n";
+		print STDERR "|      do you normally use a proxy server, but want to AVOID           |\n";
+		print STDERR "|      using it for your https sharepoint connection? (y/n)            |\n";
+		print STDERR "|        [that is, enter 'y' to avoid proxy, or 'n' to use it]         |\n";
 		print STDERR "|      your config could be:                                           |\n";
 		print STDERR "|      you don't know what a proxy is --> type 'n'                     |\n";
 		print STDERR "|      your sharepoint is outside your proxy --> type 'n'              |\n";
@@ -258,6 +262,6 @@ if(!$config{live_tests}) {
 	$soaphandler_inst->cust_rmdir ("Shared Documents/script_qc");
 	
 	is ($soaphandler_inst -> is_fd ("Shared Documents/script_qc"), 'pd', "is_fd returns 'pd' on non-existing");
-
+}
 
 done_testing();

@@ -1,4 +1,4 @@
-SharePoint-SOAPHandler version 0.0011
+SharePoint-SOAPHandler version 0.0012
 ================================
 
 This module provides CopyTree::VendorProof a connector instance with methods to deal with remote Sharepoint file operations.
@@ -33,8 +33,7 @@ The methods provided in this connector objects include:
 	cust_rmfile
 
 The functionality of these methods are described in 
-perldoc CopyTree::VendorProof and 
-perldoc SharePoint::SOAPHandler
+perldoc CopyTree::VendorProof 
 
 To create a SharePoint::SOAPHandler connector instance:
 	my $soaphandler_inst = SharePoint::SOAPHandler ->new;
@@ -87,16 +86,15 @@ DEPENDENCIES
 This module requires these other modules and libraries:
 
 CopyTree::VendorProof => 0.0011, 
-Authen::NTLM =>1.09
-SOAP::Lite =>0.712
+Authen::NTLM =>1.09,
+SOAP::Lite =>0.712,
 MIME::Base64=>3.01, 
 File::Basename=> 2.72, 
 Data::Dumper=> 2.121, 
-Carp=>1.02
+Carp=>1.02,
+Term::ReadKey =>0 #only needed for test suite
 
 COPYRIGHT AND LICENCE
-
-Put the correct copyright and licence information here.
 
 Copyright (C) 2011 by dbmolester
 

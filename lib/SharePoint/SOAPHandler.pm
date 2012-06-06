@@ -9,7 +9,7 @@ use base qw(CopyTree::VendorProof);
 use Authen::NTLM qw/ntlmv2/;ntlmv2('sp');
 #use base happens at compile time, so we don't get the runtime error from our, saying that
 #Can't locate package CopyTree::VendorProof for @SharePoint::SOAPHandler::ISA at (eval 8) line 2.
-our $VERSION = '0.0011';
+our $VERSION = '0.0012';
 use SOAP::Lite;
 #use SOAP::Data; #included in SOAP::Lite
 use LWP::UserAgent;
@@ -603,21 +603,25 @@ SharePoint::SOAPHandler - Perl extension for providing a Sharepoint connecter in
 
 This module provides CopyTree::VendorProof a connector instance with methods to deal with remote Sharepoint file operations.
 
+What?
+
+Oh, yes.  You've probabaly stumbled across this module because you wanted to copy something recursively.  Did you want to move some files into or off your SharePoint file server?  Did you buy Opentext's Livelink EWS and wish to automate some file transfers?  Well, this is kinda the right place, but it gets righter. Check out the documentation on my CopyTree::VendorProof module, where I have a priceless drill and screw analogy for how these modules all work together.  The information on this page is a tad too technical if all you're trying to decide is whether this is the module you need.
+
 =head1 IMPORTANT NOTICE: Your Implementation might not work unless you read this!
 
 Currenly, you need to install Authen::NTLM version 1.09 or greater for this module to work.  With my v1.09 tweak to Authen::NTLM on CPAN, this module should just work.  If you actually use Authen::NTLM directly for some reason, remember to set
 
-ntlmv2('sp');
+	ntlmv2('sp');
 
 prior to using SharePoint::SOAPHandler.  You did remember to export ntlmv2, no?
 
-use Authen::NTLM qw(ntlmv2);
+	use Authen::NTLM qw(ntlmv2);
 
 For those of you with earlier versions of Authen::NTLM, see the historic segment below.
 
 Also, if your Sharepoint connects through https, but does not go through a proxy server, even though all your OTHER http/ https traffic does, you must:
 
-delete $ENV{'https_proxy'}
+	delete $ENV{'https_proxy'}
 
 This is because when SOAP::Lite -> proxy calls SOAP::Transport, your %ENV is inspected for proxy settings.
 Specifying the https sharepoint domain on the no_proxy list will not mask https_proxy, because oddly, no_proxy only works for 'no http' and not 'no https'.  These are just some annoying things I discovered.  Your milage may vary.
@@ -639,9 +643,11 @@ Remember, either of these fixes must be applied for this module to work.  If the
 To create a soaphandler connector instance:
 
 	my $soaphandler_inst = SharePoint::SOAPHandler ->new;
-	#set up connection parameters
-	
-	#IMPORTANT sp_creds_domain should not have the protocol (http or https://)
+
+#set up connection parameters
+
+#IMPORTANT sp_creds_domain should not have the protocol (http or https://)
+
 	$soaphandler_inst ->sp_creds_domain('www.sharepointsite.org:443');
 	$soaphandler_inst ->sp_creds_user('DOMAIN_in_CAPs\username');
 	$soaphandler_inst ->sp_creds_password('domain_password');
@@ -650,32 +656,37 @@ To create a soaphandler connector instance:
 To add a source or destination item to a CopyTree::VendorProof instance:
 
 	my $ctvp_inst = CopyTree::VendorProof ->new;
-	#All Sharepoint file operations defined in this module uses 'Shared Documents' as a starting root path.  To define
-	#any file, you need not (and may not) provide the full uri.  Since Microsoft sometimes requests partial url and sometimes requests full
-	#urls, I prefer to append information rather than match and remove information from a url string.  What?  I didn't see you writing a module
-	#for sharepoint.
-	$ctvp_inst ->src ('Shared Documents/path to your source', $soaphandler_inst);#all soaphandler paths starts with Shared Documents/
-	$ctvp_inst ->dst ('Shared Documents/path to your destination', $soaphandler_inst);#all soaphandler paths starts with Shared Documents/
+
+All Sharepoint file operations defined in this module uses 'Shared Documents' as a starting root path.  To define any file, you need not (and may not) provide the full uri.  Since Microsoft sometimes requests partial url and sometimes requests full urls, I prefer to append information rather than match and remove information from a url string.  Was that whining I hear?  I didn't see you writing a module for sharepoint.
+
+#all soaphandler paths starts with Shared Documents/
+
+	$ctvp_inst ->src ('Shared Documents/path to your source', $soaphandler_inst);
+
+	$ctvp_inst ->dst ('Shared Documents/path to your destination', $soaphandler_inst);
 
 	$ctvp_inst ->cp;
 
-	#this in effect creates 
+This in effect creates 
 
 	'Shared Documents/path to your destination/source dir name' 
 
-	#if your source is a dir, or if your sources are a mixture of dirs and /or files.
+if your source is a dir, or if your sources are a mixture of dirs and /or files.
 
-	#If you're doing single file to single file copy, you would have
+If you're doing single file to single file copy, you would have
 
 	'Shared Documents/path to your destination'
 
-	#holding the content of your source file.
+holding the content of your source file.
 
 =head1 DESCRIPTION
 
-SharePoint::SOAPHandler, in addition to providing an instance and methods for its parent class (CopyTree::VendorProof), also provides methods for interacting with sharepoint's getlistcollection items.  These methods are not extensively tested and not supported.  Not that any other methods are, but with these you are especially on your own.
+SharePoint::SOAPHandler provides different types of methods.  
 
-The methods provided in this connector objects include:
+First, it provides connection methods to allow us to connect to sharepoint.  These connection methods that you see in the SYNOPSIS are pretty self explanatory. 
+
+Second, SharePoint::SOAPHandler provides methods for its parent class (CopyTree::VendorProof), which includes
+
 	new
 	fdls				
 	is_fd
@@ -687,80 +698,22 @@ The methods provided in this connector objects include:
 	cust_rmfile
 
 The functionality of these methods are described in 
-perldoc CopyTree::VendorProof and 
-perldoc SharePoint::SOAPHandler
 
-=head1 Instance Methods
+perldoc CopyTree::VendorProof 
 
-Since these are class methods, the first item from @_ is the instance itself, and should be stored in $inst, or whatever you'd like to call it. 
+It is worth nothing that fdls comes in quite handy for testing whether you can actually connect to your sharepoint resource using this module.  Simply open up your web browser and go to your sharepoint site, and fdls any directory that you can see under Shared Documents.  If you do a Dumper print, you should have a list of files and dirs.
 
-=head2 0. new
+	use Data::Dumper;
+	print Dumper $soaphandler_inst -> fdls('', 'Shared Documents');
 
-	which takes no arguments, but blesses an anonymous hash into the data connection object and returns it
+Lastly, SharePoint::SOAPHandler also provides methods for interacting with sharepoint's getlistcollection items.  These sharepoint methods are not extensively tested and are not supported, nor is it documented here.  To tell the truth, not all methods are *entensively* tested, but with these you are especially on your own.
 
-=head2 1. fdls
-
-	which takes two arguments:
-		an option ($lsoption) that's one of 'f', 'd', 'fdarrayrefs', or ''
-		and a directory path $startpath.
-		The lsoption is passed to the SUPER class fdls_ret, and is not handled at this level.
-	This method will generate @files and @dirs, which are lists of files and directories that start with $startpath,
-	And return $self -> SUPER::fdls_ret ($lsoption, \@files, \@dirs),
-	which is ultimately a listing of the directory content, being one of
-		@files, @dirs, (\@files, \@dirs), or  @files_and_dirs) depending on the options being 'f', 'd', 'fdarrayrefs' or ''
-
-=head2 2. is_fd
-
-	which takes a single argument of a file or dir $path,
-	and returns 'd' for directory, 
-		'f' for file,
-		'pd' for non-existing, but has a valid parent dir,
-		'0' for non of the above.
-
-=head2 3. read_into_memory
-
-	which takes the $sourcepath of a file, 
-	and reads (slurps) it into a scalar $binfile #preferably in binmode,
-	and returns it as \$binfile
-
-=head2 4. write_from_memory
-
-	which takes the reference to a scalar $binfile (\$binfile)  PLUS 
-	a destination path, and writes the scalar to the destination.
-	no return is necessary
-
-=head2 5. copy_local_files
-
-	which takes the $source and $destination files on the same file system, 
-	and copies from $source to $destination.  No return is necessary.  This 
-	method is included such that entirely remote operations may transfer faster,
-	without an intermediate 'download to local machine' step.
-
-=head2 6. cust_mkdir
-
-	which takes a $dirpath and creates the dir.  If the parent of $dirpah
-	does not exist, give a warning and do not do anything
-
-=head2 7. cust_rmdir
-
-	which takes a $dirpath and removes the entire dir tree from $dirpath
-	croaks / dies if $dirpath is not a dir. No return is necessary.
-	To make things easier, when writing this method, use
-
-	my ($filesref, $dirsref) = $inst -> ls_tree_fdret( $dirpath, $inst -> ls_tree($dirpath);
-
-	to get array references of @files and @dirs under $dirpath
-	Note: ls_tree and ls_tree_fdret uses fdls, and are parent classes in CopyTree::VendorProof 
-
-=head2 8. cust_rmfile
-
-	which takes a $filepath and removes it.
-	croaks / dies if $file is not a file. 
 
 =head1 SEE ALSO
 
 CopyTree::VendorProof
-CopyTree::VendorProof::LocalFileOp
+CopyTree::VendorProof::LocalFileOp 
+Livelink::DAV
 
 =head1 AUTHOR
 
@@ -770,9 +723,6 @@ dbmolester, dbmolester de gmail.com
 
 Copyright (C) 2011 by dbmolester
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.10.1 or,
-at your option, any later version of Perl 5 you may have available.
-
+This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself, either Perl version 5.10.1 or, at your option, any later version of Perl 5 you may have available.  
 
 =cut
