@@ -1,7 +1,12 @@
-SharePoint-SOAPHandler version 0.0012
+SharePoint-SOAPHandler version 0.0013
 ================================
 
-This module provides CopyTree::VendorProof a connector instance with methods to deal with remote Sharepoint file operations.
+This module provides a new [sic.] contructor and necessary subclass methods for CopyTree::VendorProof in order to deal with remote Sharepoint file operations.
+
+What?
+
+Oh, yes.  You've probabaly stumbled across this module because you wanted to copy something recursively.  Did you want to move some files into or off your SharePoint file server?  Did you buy Opentext's Livelink EWS and wish to automate some file transfers?  Well, this is kinda the right place, but it gets righter. Check out the documentation on my CopyTree::VendorProof module, where I have a priceless drill and screw analogy for how these modules all work together.  The information on this page is a tad too technical if all you're trying to decide is whether this is the module you need.
+
 
  IMPORTANT NOTICE: Your Implementation might not work unless you read the following!
 
@@ -21,7 +26,7 @@ delete $ENV{'https_proxy'}
 
 Specifying the domain on no_proxy will not do the trick, because oddly, no_proxy only works for 'no http' and not 'no https'.  These are just some annoying things I discovered.  Your milage may vary.
 
-The methods provided in this connector objects include:
+The subclass methods provided in this connector objects include:
 	new
 	fdls				
 	is_fd
@@ -34,6 +39,8 @@ The methods provided in this connector objects include:
 
 The functionality of these methods are described in 
 perldoc CopyTree::VendorProof 
+
+Under the section "Object specific instance methods for the base class CopyTree::VendorProof"
 
 To create a SharePoint::SOAPHandler connector instance:
 	my $soaphandler_inst = SharePoint::SOAPHandler ->new;

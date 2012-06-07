@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests=>40; #require and import instead of use, since what is imported changes as
+use Test::More tests=>45; #require and import instead of use, since what is imported changes as
 				#we decide whether we want to do live tests or not
 #use Test::More tests => 1;
 BEGIN { use_ok('SharePoint::SOAPHandler') };
@@ -36,7 +36,7 @@ close $config_fh;
 
 SKIP:{
 
-skip 'skipping online tests', 37 if (!$config{'live_tests'});
+skip 'skipping online tests', 42 if (!$config{'live_tests'});
 #if(!$config{live_tests}) {
 #  # import Test::More tests => 1;
 #  # ok(1);
@@ -172,6 +172,33 @@ skip 'skipping online tests', 37 if (!$config{'live_tests'});
 	
 	my $path='Shared Documents/script_qc/somepath';
 	$soaphandler_inst -> write_from_memory(\$content, $path);
+	my $readmemscalarref=$soaphandler_inst -> read_into_memory($path);
+	is ($$readmemscalarref, "somecontent\n","test read content to be same as written");
+	my $newpath='Shared Documents/script_qc/somepath2';
+	$soaphandler_inst -> copy_local_files( $path, $newpath);
+	#new content should overwrite
+	my $newcontent="newcontent\n";
+	$soaphandler_inst -> write_from_memory(\$newcontent, $newpath);
+	$readmemscalarref=$soaphandler_inst -> read_into_memory($newpath);
+	is ($$readmemscalarref, "newcontent\n","test read, new content overwrite old content");
+	$soaphandler_inst -> copy_local_files( $path, $newpath);
+	$readmemscalarref=$soaphandler_inst -> read_into_memory($newpath);
+	is ($$readmemscalarref, "somecontent\n","copy_local_files will overwrite content (newcontent back to somecontent)");
+
+	my $newdirpath ='Shared Documents/script_qc/targetdir';
+
+	$soaphandler_inst -> cust_mkdir ($newdirpath)or clunk();
+	$soaphandler_inst -> write_from_memory(\$newcontent, 'Shared Document/script_qc/targetdir');
+	my @emptyarr = $soaphandler_inst -> fdls('',$newdirpath);
+	
+	is (scalar (@emptyarr), "0","write_from_memory should fail on dir target");
+	@emptyarr = $soaphandler_inst -> fdls('',$newdirpath);
+
+	$soaphandler_inst -> copy_local_files( $path, $newdirpath);
+	is (scalar (@emptyarr), "0","copy_local_files should fail on dir target");
+	
+	
+	
 	
 	isa_ok (ref $cpobj ->src ($path,$soaphandler_inst), 'CopyTree::VendorProof', 'src returns self');
 	is (ref $cpobj ->{'source'}{$path}, 'SharePoint::SOAPHandler', 'src stores connector_inst with path as key');

@@ -9,7 +9,7 @@ use base qw(CopyTree::VendorProof);
 use Authen::NTLM qw/ntlmv2/;ntlmv2('sp');
 #use base happens at compile time, so we don't get the runtime error from our, saying that
 #Can't locate package CopyTree::VendorProof for @SharePoint::SOAPHandler::ISA at (eval 8) line 2.
-our $VERSION = '0.0012';
+our $VERSION = '0.0013';
 use SOAP::Lite;
 #use SOAP::Data; #included in SOAP::Lite
 use LWP::UserAgent;
@@ -601,7 +601,8 @@ __END__
 
 SharePoint::SOAPHandler - Perl extension for providing a Sharepoint connecter instance for CopyTree::VendorProof.
 
-This module provides CopyTree::VendorProof a connector instance with methods to deal with remote Sharepoint file operations.
+This module provides a new [sic.] contructor and necessary subclass methods for CopyTree::VendorProof in order to deal with remote Sharepoint file operations.
+
 
 What?
 
@@ -667,9 +668,13 @@ All Sharepoint file operations defined in this module uses 'Shared Documents' as
 
 	$ctvp_inst ->cp;
 
-This in effect creates 
+This in effect copies 
 
-	'Shared Documents/path to your destination/source dir name' 
+	Shared Documents/path to your source
+
+to your 
+
+	path to your destination/source base name' 
 
 if your source is a dir, or if your sources are a mixture of dirs and /or files.
 
@@ -700,6 +705,8 @@ Second, SharePoint::SOAPHandler provides methods for its parent class (CopyTree:
 The functionality of these methods are described in 
 
 perldoc CopyTree::VendorProof 
+
+Under the section "Object specific instance methods for the base class CopyTree::VendorProof"
 
 It is worth nothing that fdls comes in quite handy for testing whether you can actually connect to your sharepoint resource using this module.  Simply open up your web browser and go to your sharepoint site, and fdls any directory that you can see under Shared Documents.  If you do a Dumper print, you should have a list of files and dirs.
 

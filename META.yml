@@ -26,4 +26,4 @@ requires:
   MIME::Base64: 0
   SOAP::Lite: 0
   Term::ReadKey: 0
-version: 0.0012
+version: 0.0013
